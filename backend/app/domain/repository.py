@@ -16,7 +16,7 @@ class ArtistRepository:
         current_dir = Path(__file__).resolve().parent
         
         # On remonte : domain -> app -> backend -> ARTDLE -> ressources
-        self.file_path = current_dir.parent.parent.parent / "ressources" / "artistes_final.json"
+        self.file_path = current_dir.parent.parent / "ressources" / "artistes_final.json"
         
         # Debug
         print(f"📂 Repository init. Chemin JSON: {self.file_path}")

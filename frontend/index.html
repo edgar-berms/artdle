@@ -25,11 +25,12 @@
             display: flex; flex-direction: column; align-items: center;
             margin: 0; padding: 40px 20px; min-height: 100vh;
             
-            /* BACKGROUND LOCAL CORRIGÉ */
-            /* On utilise le chemin /static/ que l'on a configuré dans le backend */
-            background: url('/static/piazza_de_italia.jpg') no-repeat center center fixed;
+            /* Le background sera défini par le JS pour utiliser l'URL du backend */
+            background-color: var(--bg-color); 
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
             background-size: cover;
-            background-color: var(--bg-color); /* Couleur de secours si l'image ne charge pas */
         }
 
         /* FILTRE SOMBRE */
@@ -51,7 +52,7 @@
             font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.8); 
         }
         #rulesArrow {
-            font-size: 1.25rem; /* TAILLE RÉDUITE (était 2rem) */
+            font-size: 1.25rem;
             transition: transform 0.3s ease; color: #ccc;
         }
         .title-container:hover #rulesArrow { color: white; transform: scale(1.1); }
@@ -59,7 +60,7 @@
         /* BOITE DES RÈGLES */
         #rulesBox {
             display: none;
-            background: rgba(32, 32, 35, 0.95); /* Un peu plus opaque pour la lisibilité */
+            background: rgba(32, 32, 35, 0.95);
             border: 1px solid #555;
             border-radius: 15px;
             padding: 20px;
@@ -223,6 +224,14 @@
     </div>
 
     <script>
+        // --- CONFIGURATION DE L'URL API ---
+        // Change ici : 'http://localhost:8000' si tu testes en local, 
+        // ou 'https://artdle.onrender.com' pour la prod.
+        const API_BASE_URL = "https://artdle.onrender.com";
+
+        // Définir l'image de fond via JS pour utiliser l'URL du backend
+        document.body.style.backgroundImage = `url('${API_BASE_URL}/static/piazza_de_italia.jpg')`;
+
         let targetName = null;
         let targetId = null;
         let isGameFinished = false;
@@ -231,7 +240,8 @@
 
         async function initGame() {
             try {
-                const res = await fetch('/api/v1/game/start');
+                // Modification ici : Ajout de API_BASE_URL
+                const res = await fetch(`${API_BASE_URL}/api/v1/game/start`);
                 if (!res.ok) throw new Error("Erreur serveur");
                 const data = await res.json();
                 targetName = data.target_name_encrypted;
@@ -273,7 +283,8 @@
             if (steps.includes(guessCount)) {
                 if (!hintDataCache) {
                     try {
-                        const res = await fetch('/api/v1/game/hint', {
+                        // Modification ici : Ajout de API_BASE_URL
+                        const res = await fetch(`${API_BASE_URL}/api/v1/game/hint`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ target_name: targetName })
@@ -355,7 +366,8 @@
             const val = e.target.value;
             if (val.length < 2) { suggestionsBox.innerHTML = ''; return; }
             try {
-                const res = await fetch(`/api/v1/artists/search?q=${val}`);
+                // Modification ici : Ajout de API_BASE_URL
+                const res = await fetch(`${API_BASE_URL}/api/v1/artists/search?q=${val}`);
                 const artists = await res.json();
                 suggestionsBox.innerHTML = artists.map(a => 
                     `<div class="suggestion-item" onclick="selectSuggestion('${a.name.replace(/'/g, "\\'")}')">${a.name}</div>`
@@ -370,7 +382,8 @@
             searchInput.value = ''; suggestionsBox.innerHTML = '';
             
             try {
-                const res = await fetch('/api/v1/game/guess', {
+                // Modification ici : Ajout de API_BASE_URL
+                const res = await fetch(`${API_BASE_URL}/api/v1/game/guess`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ target_name: targetName, guess_name: guessName })
